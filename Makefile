@@ -1,16 +1,26 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -g
-SOURCES=src/main.c src/repl.c 
-OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=db
+TARGET = class_db
+SRC_DIR = src
+OBJ_DIR = obj
+INC_DIR = src
 
-all: $(EXECUTABLE)
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-$(EXECUTABLE): $(OBJECTS)
+CC = gcc
+CFLAGS = -Wall -Wextra -I$(INC_DIR) -g
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
+	rm -rf $(OBJ_DIR) $(TARGET)
+
+rebuild: clean all
